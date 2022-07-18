@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    ingress-allowlist: "*.acmecorp.com"
+  name: staging
+
