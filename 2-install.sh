@@ -1,7 +1,5 @@
 #!/bin/bash
 
-kubectl apply -f webhook-configuration.yaml
-
 # https://www.openpolicyagent.org/docs/latest/kubernetes-tutorial/#7-exercise-restrict-hostnames-policy
 kubectl create -f qa-namespace.yaml
 kubectl create -f production-namespace.yaml

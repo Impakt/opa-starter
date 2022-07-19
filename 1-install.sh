@@ -29,13 +29,13 @@ kubectl config use-context opa-tutorial
 
 # https://www.openpolicyagent.org/docs/latest/kubernetes-tutorial/#3-create-tls-credentials-for-opa
 openssl genrsa -out ca.key 2048
-openssl req -x509 -new -nodes -key ca.key -days 100000 -out ca.crt -subj "/CN=admission_ca"
+openssl req -x509 -new -nodes -sha256 -key ca.key -days 100000 -out ca.crt -subj "/CN=admission_ca"
 
 # now the docs say to create server.conf but it's already here
 
 openssl genrsa -out server.key 2048
-openssl req -new -key server.key -out server.csr -config server.conf
-openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 100000 -extensions v3_req -extfile server.conf
+openssl req -new -key server.key -sha256 -out server.csr -extensions v3_ext -config server.conf
+openssl x509 -req -in server.csr -sha256 -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 100000 -extensions v3_ext -extfile server.conf
 
 kubectl create secret tls opa-server --cert=server.crt --key=server.key --namespace opa
 
@@ -85,8 +85,7 @@ EOF
 kubectl label ns kube-system openpolicyagent.org/webhook=ignore
 kubectl label ns opa openpolicyagent.org/webhook=ignore
 
-export no_proxy=${no_proxy},.docker.internal
-
+kubectl apply -f webhook-configuration.yaml
 echo -e "The OPA logs will now appear, press ctrl+c to exit the logs and continue the script. If the container is still starting, enter \e[32mkubectl logs -l app=opa -c opa -f\e[0m to try again until it's up"
 echo -e "That's \e[32mkubectl logs -l app=opa -c opa -f\e[0m"
 
